@@ -1,7 +1,7 @@
 # Домашнее задание #01 (введение, тестирование)
 
 ### 1. Функция оценки сообщения
-Реализовать функцию predict_message_mood, которая приниамает на вход строку, экземпляр модели SomeModel и пороги хорошести.
+Реализовать функцию predict_message_mood, которая принимает на вход строку, экземпляр модели SomeModel и пороги хорошести.
 Функция возвращает:
 - "неуд", если предсказание модели меньше bad_threshold
 - "отл", если предсказание модели больше good_threshold
@@ -11,6 +11,7 @@
 class SomeModel:
     def predict(self, message: str) -> float:
         # реализация не важна
+        pass
 
 
 def predict_message_mood(
@@ -21,8 +22,7 @@ def predict_message_mood(
 ) -> str:
     ...
 
-
-assert predict_message_mood("Чапаев и пустота", model) == "отл"
+assert predict_message_mood('Чапаев и пустота', model) == "отл"
 assert predict_message_mood("Вулкан", model) == "неуд"
 ```
 
