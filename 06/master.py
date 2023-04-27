@@ -15,9 +15,8 @@ class Master(Thread):
         self.workers = []
 
     def start(self):
-
         for i in range(self.num_of_workers):
-            self.workers.append(Worker(self.task_queue, self.k))
+            self.workers.append(Worker(self.task_queue, self.k, name=f"W{i}"))
 
         for w in self.workers:
             w.start()
@@ -31,4 +30,3 @@ class Master(Thread):
             while True:
                 client_socket, address = server_sock.accept()
                 self.task_queue.put((client_socket, address))
-                print(f"[+] Connection queue size: {self.task_queue.qsize()}")
