@@ -42,20 +42,30 @@ class CourseWithWeakref:
 @profile
 def instance_creation_comparison(n):
     """
-        Функция, которая замеряет время создания пачки экземпляров
-        разных классов
+    Функция, которая замеряет время создания пачки экземпляров
+    разных классов
     """
 
-    t1 = timeit.timeit("[Course(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))" + f"for i in range({n})]",
-                       setup="from __main__ import Teacher, Course", number=1)
+    t1 = timeit.timeit(
+        "[Course(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))"
+        + f"for i in range({n})]",
+        setup="from __main__ import Teacher, Course",
+        number=1,
+    )
 
     t2 = timeit.timeit(
-        "[CourseWithSlots(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))" + f"for i in range({n})]",
-        setup="from __main__ import Teacher, CourseWithSlots", number=1)
+        "[CourseWithSlots(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))"
+        + f"for i in range({n})]",
+        setup="from __main__ import Teacher, CourseWithSlots",
+        number=1,
+    )
 
     t3 = timeit.timeit(
-        "[CourseWithWeakref(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))" + f"for i in range({n})]",
-        setup="from __main__ import Teacher, CourseWithWeakref", number=1)
+        "[CourseWithWeakref(f'title_{i}', Teacher(f'teacher_{i}', f'title_{i}'))"
+        + f"for i in range({n})]",
+        setup="from __main__ import Teacher, CourseWithWeakref",
+        number=1,
+    )
 
     print(f"\nВремя создания экземпляров различных классов ({n = })")
     print(f"\tКласс Course: {t1:.6f}")
@@ -66,8 +76,8 @@ def instance_creation_comparison(n):
 @profile
 def attribute_access_comparison(n):
     """
-        Функция, которая замеряет время чтения и изменения атрибутов
-        разных классов
+    Функция, которая замеряет время чтения и изменения атрибутов
+    разных классов
     """
     # замер времени доступа и чтения атрибутов для каждого экземпляра
     t1 = timeit.timeit(
@@ -109,24 +119,20 @@ def attribute_access_comparison(n):
     print(f"\tКласс CourseWithWeakref. Чтение: {t5:.6f}, запись: {t6:.6f}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     N = 100000
 
     instance_creation_comparison(N)
 
-    courses = [
-        Course("Python", Teacher("John Doe", "Python")) for _ in range(N)
-    ]
+    courses = [Course("Python", Teacher("John Doe", "Python")) for _ in range(N)]
     courses_with_slots = [
-        CourseWithSlots("Python", Teacher("John Doe", "Python"))
-        for _ in range(N)
+        CourseWithSlots("Python", Teacher("John Doe", "Python")) for _ in range(N)
     ]
     courses_with_weakref = [
-        CourseWithWeakref("Python", Teacher("John Doe", "Python"))
-        for _ in range(N)
+        CourseWithWeakref("Python", Teacher("John Doe", "Python")) for _ in range(N)
     ]
 
     attribute_access_comparison(N)
 
-    cProfile.run('instance_creation_comparison(N)', sort='tottime')
-    cProfile.run('attribute_access_comparison(N)', sort='tottime')
+    cProfile.run("instance_creation_comparison(N)")
+    cProfile.run("attribute_access_comparison(N)")
