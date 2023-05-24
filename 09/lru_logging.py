@@ -1,6 +1,8 @@
 import argparse
 import logging
 
+import logging_config
+
 
 class Node:
     """
@@ -42,37 +44,6 @@ class LRUCache:
 
         # инициализируем логирование
         self.logger = logging.getLogger("LRUCache")
-        self.logger.setLevel(logging.DEBUG)
-
-        # определяем формат для логов
-        formatter = logging. \
-            Formatter("%(asctime)s - %(levelname)-8s - %(message)s")
-
-        # создаем обработчик для записи в файл
-        file_handler = logging.FileHandler("cache.log")
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
-
-        if enable_stdout:
-            # если флаг вывода в консоль активен, создаем обработчик
-            # для вывода в консоль
-            stream_handler = logging.StreamHandler()
-            stream_handler.setLevel(logging.DEBUG)
-            stream_handler.setFormatter(formatter)
-            self.logger.addHandler(stream_handler)
-
-        if filter_logs:
-            # реализуем свой собственный класс-фильтр
-            class CustomFilter(logging.Filter):
-                def filter(self, record):
-                    # отфильтровываем только записи связанные с операцией set
-                    return "SET" in record.msg
-
-            custom_filter = CustomFilter()
-            file_handler.addFilter(custom_filter)
-            if enable_stdout:
-                stream_handler.addFilter(custom_filter)
 
     def get(self, key):
         if key not in self.data:
@@ -91,9 +62,7 @@ class LRUCache:
             # обновляем значение и сдвигаем в начало
             node.value = value
             self._move_to_head(node)
-            self.logger.warning("SET - <key: %s, value: %s> (Key existed)",
-                              key,
-                              value)
+            self.logger.warning("SET - <key: %s, value: %s> (Key existed)", key, value)
         else:
             new_node = Node(key, value)
             self.data[key] = new_node
@@ -102,15 +71,13 @@ class LRUCache:
                 tail_node_key = self._pop_tail().key
                 del self.data[tail_node_key]
                 self.logger.warning(
-                    "SET - <key: %s, value: %s> "
-                    "(Cache overflow, key <%s> deleted)",
+                    "SET - <key: %s, value: %s> " "(Cache overflow, key <%s> deleted)",
                     key,
                     value,
                     tail_node_key,
                 )
             else:
-                self.logger. \
-                    info("SET - <key: %s, value: %s> (New key)", key, value)
+                self.logger.info("SET - <key: %s, value: %s> (New key)", key, value)
 
     def _move_to_head(self, node):
         self._remove_node(node)
@@ -150,25 +117,25 @@ class LRUCache:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Данный модуль реализует класс LRU-cache, "
-                    "который логирует операции с кэшем в файл cache.log"
+        "который логирует операции с кэшем в файл cache.log"
     )
-    parser.add_argument("-s",
-                        action="store_true",
-                        help="Вывод логов в консоль")
+    parser.add_argument("-s", action="store_true", help="Вывод логов в консоль")
     parser.add_argument(
         "-f",
         action="store_true",
         help="Фильтрация записей логов: "
-             "оставляет только записи, cвязанные с операцией set",
+        "оставляет только записи, cвязанные с операцией set",
     )
     args = parser.parse_args()
 
-    cache = LRUCache(limit=5, enable_stdout=args.s, filter_logs=args.f)
+    logging_config.configure_logging(enable_stdout=args.s, filter_logs=args.f)
+
+    cache = LRUCache(limit=5)
     cache.set("a", "1")
     cache.get("a")
     try:
         cache.get("zzz")
-    except:
+    except KeyError:
         pass
     cache.set("b", "2")
     cache.set("c", "3")
