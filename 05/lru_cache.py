@@ -2,6 +2,7 @@ class Node:
     """
     Узел двусвязного списка
     """
+
     def __init__(self, key=None, value=None, prev=None, next=None):
         self.key = key
         self.value = value
@@ -21,7 +22,7 @@ class LRUCache:
 
     def __init__(self, limit=42):
         if not isinstance(limit, int) or isinstance(limit, bool):
-            raise TypeError('Limit must be an integer')
+            raise TypeError("Limit must be an integer")
 
         if limit < 1:
             raise ValueError("Limit must be a positive integer number")
