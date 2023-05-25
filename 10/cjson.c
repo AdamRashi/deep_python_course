@@ -28,14 +28,14 @@ static PyObject* cjson_loads(PyObject* self, PyObject* args)
     // проверка на пустую строку
     if (json_str[pos] == '\0') {
         Py_DECREF(dict);
-        PyErr_Format(PyExc_TypeError, "JSON string is empty");
+        PyErr_Format(PyExc_ValueError, "JSON string is empty");
         return NULL;
     }
 
     // проверка наличия фигурной скобки
     if (json_str[pos] != '{') {
         Py_DECREF(dict);
-        PyErr_Format(PyExc_TypeError, "JSON should start with \"{\"");
+        PyErr_Format(PyExc_ValueError, "JSON should start with \"{\"");
         return NULL;
     }
 
