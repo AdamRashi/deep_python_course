@@ -1,41 +1,30 @@
-import asyncio
 import unittest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch
+from unittest import IsolatedAsyncioTestCase
 
 import aiohttp
 
 from fetcher import fetch_url, url_gen
 
 
-class TestFetcher(unittest.TestCase):
+class TestFetchUrl(IsolatedAsyncioTestCase):
+    async def test_fetch_url(self):
+        urls = ["http://google.com", "http://change.org"]
+        results = []
+
+        async with aiohttp.ClientSession() as session:
+            await fetch_url(session, iter(urls), results)
+
+        # проверим что результаты записались в нужном количестве
+        # и с нужными данными
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0][0], "http://google.com")
+        self.assertEqual(results[1][0], "http://change.org")
+
+
+class TestFetcherGenerator(unittest.TestCase):
     def setUp(self) -> None:
         self.urls = ["http://google.com", "http://change.org", "http://vk.com"]
-
-    @patch("aiohttp.ClientSession.get")
-    async def test_fetch_url(self, mock_response: MagicMock):
-        # мокаем используемые методы, в том числе методы
-        # контекстного менеджера
-        mock_response.read = AsyncMock(return_value=b"TEST html text TEST")
-        mock_response.__aexit__ = AsyncMock()
-        mock_response.__aenter__ = AsyncMock(return_value=mock_response)
-
-        # создаём mock сессии, чтобы передать его в функцию
-        mock_session = MagicMock()
-        mock_session.get = AsyncMock(return_value=mock_response)
-
-        # Вызываем fetch_url с замоканной клиентской сессией
-        result = asyncio.run(fetch_url("test_url", mock_session))
-
-        self.assertTrue(len(result) == 2)
-        self.assertEqual(result[0], "test_url")
-        self.assertEqual(result[1], [("TEST", 2)])
-
-        mock_response.read.side_effect = aiohttp.ClientError
-        mock_session = AsyncMock(return_value=mock_response)
-        result = asyncio.run(fetch_url("test_url", mock_session))
-
-        self.assertTrue(len(result) == 1)
-        self.assertEqual(result, "test_url")
 
     @patch("builtins.open")
     def test_url_gen(self, mock_open):
